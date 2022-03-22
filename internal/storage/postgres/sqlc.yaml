@@ -1,0 +1,7 @@
+version: 1
+packages:
+  - path: "db"
+    name: "postgres"
+    engine: "mysql"
+    schema: "sql_scripts/schema.sql"
+    queries: "sql_scripts/query.sql"
