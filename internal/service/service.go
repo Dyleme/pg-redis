@@ -21,5 +21,5 @@ func New(ps PersonStorage) *Service {
 }
 
 func (s *Service) AddPerson(ctx context.Context, person *model.Person) (personID int, err error) {
-	return 1, nil
+	return s.ps.AddPerson(ctx, person)
 }

@@ -54,6 +54,7 @@ func (s *Server) Run(ctx context.Context) error {
 	serverErrChan := make(chan error)
 
 	go func() {
+		log.Println("start server")
 		err := s.ListenAndServe()
 		if err != nil && errors.Is(err, http.ErrServerClosed) {
 			serverErrChan <- err
