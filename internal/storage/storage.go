@@ -49,18 +49,68 @@ func getID(result sql.Result, err error) (int, error) {
 	return int(index), nil
 }
 
-func (s *Storage) GetPerson(ctx context.Context, id int) *model.Person {
+var ErrGetPerson = errors.New("no such person")
+
+func (s *Storage) GetPerson(ctx context.Context, id int) (*model.Person, error) {
 	var person model.Person
 	err := s.execTx(ctx, func(ctx context.Context, q *queries.Queries) error {
 		personSQL, err := q.PersonByID(ctx, int32(id))
 		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return ErrGetPerson
+			}
 			return err
 		}
-		person = model.Person{
-			Name:  personSQL.PersonName,
-			Phone: personSQL.Phone,
+		address := model.Address{
+			Country:    personSQL.Country,
+			City:       personSQL.City,
+			Street:     personSQL.Street,
+			House:      personSQL.House,
+			Apartments: personSQL.Apartments.String,
 		}
+		person = model.Person{
+			Name:    personSQL.PersonName,
+			Phone:   personSQL.Phone,
+			Address: address,
+		}
+
+		return nil
 	})
+	if err != nil {
+		return nil, err
+	}
+	return &person, nil
+}
+
+func (s *Storage) PersonList(ctx context.Context) ([]*model.Person, error) {
+	list := make([]*model.Person, 0)
+	err := s.execTx(ctx, func(ctx context.Context, q *queries.Queries) error {
+		personsSQL, err := q.PersonList(ctx)
+		if err != nil {
+			return err
+		}
+		for _, personSQL := range personsSQL {
+			address := model.Address{
+				Country:    personSQL.Country,
+				City:       personSQL.City,
+				Street:     personSQL.Street,
+				House:      personSQL.House,
+				Apartments: personSQL.Apartments.String,
+			}
+			person := model.Person{
+				Name:    personSQL.PersonName,
+				Phone:   personSQL.Phone,
+				Address: address,
+			}
+			list = append(list, &person)
+		}
+
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return list, nil
 }
 
 func (s *Storage) AddPerson(ctx context.Context, person *model.Person) (personID int, err error) {

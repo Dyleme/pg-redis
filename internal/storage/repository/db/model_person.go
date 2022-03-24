@@ -2,7 +2,18 @@
 
 package queries
 
-import ()
+import (
+	"database/sql"
+)
+
+type Address struct {
+	ID         int32
+	Country    string
+	City       string
+	Street     string
+	House      string
+	Apartments sql.NullString
+}
 
 type Person struct {
 	ID         int32

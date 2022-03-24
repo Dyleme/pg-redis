@@ -3,14 +3,6 @@ packages:
   - path: "db"
     name: "queries"
     engine: "mysql"
-    schema: "sql_scripts/schema_person.sql"
-    queries: "sql_scripts/query_person.sql"
+    schema: "sql_scripts/schema.sql"
+    queries: "sql_scripts/query.sql"
     output_models_file_name: "model_person.go"
-
-  - path: "db"
-    name: "queries"
-    engine: "mysql"
-    schema: "sql_scripts/schema_address.sql"
-    queries: "sql_scripts/query_address.sql"
-    output_models_file_name: "model_address.go"
-
